@@ -1,0 +1,15 @@
+name: emod
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - numpy
+  - pip
+  - pandas
+  - notebook
+  - pip:
+      - --extra-index-url https://packages.idmod.org/api/pypi/pypi-production/simple
+      - emodpy==1.22
+      - matplotlib
+      - sciris
