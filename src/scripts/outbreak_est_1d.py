@@ -2,6 +2,7 @@
 Outbreak estimate given uncertainty in R0
 """
 
+import json
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.optimize     as spopt
@@ -58,7 +59,7 @@ def plot_R0_dist(m,s,ax, bins=np.linspace(0.8,2.5), n=10000):
 
     return ax
 
-def plot_Z_dist(m, s, ax, emod_results=None, n=10000, bins=np.linspace(0,1)):
+def plot_Z_dist(m, s, ax, emod_results=None, pymc_results=None, n=10000, bins=np.linspace(0,1)):
     """
     Plot a distribution of Z values
     """
@@ -66,6 +67,7 @@ def plot_Z_dist(m, s, ax, emod_results=None, n=10000, bins=np.linspace(0,1)):
     # draw n samples from the distribution set by m and s
     R0 = np.random.randn(n)*s + m
     Z = analytic_Z(R0)
+    print(np.mean(Z), np.std(Z))
 
     # plot the analytic distribution
     ax.hist(Z, bins=bins, histtype="stepfilled", color=methods.DefaultColors().analytic, 
@@ -75,6 +77,11 @@ def plot_Z_dist(m, s, ax, emod_results=None, n=10000, bins=np.linspace(0,1)):
     if emod_results is not None:
         ax.hist(emod_results["atk_frac"], bins=bins, histtype="step", color=methods.DefaultColors().emod, 
             lw=1, density=True)
+
+    # add pymc results
+    if pymc_results is not None:
+        ax.hist(np.array(pymc_results["posterior"]["Z"])[:, 500:].flatten(), bins=bins, histtype="step", 
+            color=methods.DefaultColors().emod, lw=1, density=True)
 
     # format axes
     ax = format_axes(ax)
@@ -101,6 +108,7 @@ ym = [0.55] + (ny-1)*[0.08] + [0.1]
 fc = pyfcf.FigConfig(nx, ny, idx=idx, idy=idy, xm=xm, ym=ym)
 fig = plt.figure(figsize=(fc.xs, fc.ys))
 
+# *********************************************************
 # loop through axes and plot R0 distributions:
 for iy in range(len(R0_ranges)):
     # get axes R0 range and name
@@ -120,6 +128,7 @@ for iy in range(len(R0_ranges)):
     else: 
         ax.set_xticklabels([])
 
+# *********************************************************
 # loop through axes and plot analytic+EMOD solutions
 for iy in range(len(R0_ranges)):
     # get axes R0 range and name
@@ -132,8 +141,17 @@ for iy in range(len(R0_ranges)):
     s = (R0_range[1]-R0_range[0])/3
     # get EMOD results
     select_emod_results = emod_results[emod_results["R0_name"] == name]
+
+    # # plot without pymc
+    # plot_Z_dist(m,s,ax,select_emod_results)    
+
+    # add pymc: load json file
+    pymc_results = json.load(open(paths.output / f"idata_{name}.json"))    
     # plot
-    plot_Z_dist(m,s,ax,select_emod_results)
+    plot_Z_dist(m,s,ax,select_emod_results,pymc_results)
+
+
+
     # add to plot
     xlim = ax.get_xlim()
     if iy == 0:
@@ -147,4 +165,3 @@ for iy in range(len(R0_ranges)):
 
 plt.savefig(paths.figures / 'outbreak_est_1d_R0.png', transparent=0)
 
-    
