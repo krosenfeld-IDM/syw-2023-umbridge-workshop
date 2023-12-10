@@ -15,7 +15,7 @@ import methods
 pyfcf.setup_matplotlib(font_size=12)
 
 # calibration directory
-tpath = paths.emod / "model_calibration01" / "experiment_workshop_calib04"
+tpath = paths.emod / "model_calibration01" / "experiment_workshop_calib05"
 
 # load results
 emod_results = methods.CalibBrick(tpath=tpath)
@@ -27,31 +27,33 @@ ndim = len(calib_vars)
 
 # select what to plot
 df_emod_results = emod_results.to_df()
-select_emod_results = df_emod_results[df_emod_results["iteration"] >= 0 ]
-samples = select_emod_results[calib_vars].to_numpy()
 
-numpy_range = lambda x: (x.max() - x.min())
-cnrm = lambda x: (x - df_emod_results['cal_val'].min())/numpy_range(df_emod_results['cal_val'])
+for ii, iter_thresh in enumerate([0, 1, 4, df_emod_results["iteration"].max()]):
+    select_emod_results = df_emod_results[df_emod_results["iteration"] <= iter_thresh]
+    samples = select_emod_results[calib_vars].to_numpy()
 
-
-# corner figure
-label_dict = dict(
-    R0 = 'Reproductive\nNumber',
-    R0_variance = 'Spreader\nHeterogeneity',
-    indiv_variance_acq = 'Catcher\nHeterogeneity',
-    correlation_acq_trans = 'Spreader-Catcher\nCorrelation'
-)
-fig = corner.corner(samples, labels=[label_dict[k] for k in calib_vars])
-
-# Extract the axes
-axes = np.array(fig.axes).reshape((ndim, ndim))
+    numpy_range = lambda x: (x.max() - x.min())
+    cnrm = lambda x: (x - df_emod_results['cal_val'].min())/numpy_range(df_emod_results['cal_val'])
 
 
-# Loop over the histograms
-for yi in range(ndim):
-    for xi in range(yi):
-        ax = axes[yi, xi]
-        ax.scatter(select_emod_results[calib_vars[xi]], select_emod_results[calib_vars[yi]], 
-            s = 3, c=cnrm(select_emod_results['cal_val']))
+    # corner figure
+    label_dict = dict(
+        R0 = 'Reproductive\nNumber',
+        R0_variance = 'Spreader\nHeterogeneity',
+        indiv_variance_acq = 'Catcher\nHeterogeneity',
+        correlation_acq_trans = 'Spreader-Catcher\nCorrelation'
+    )
+    fig = corner.corner(samples, labels=[label_dict[k] for k in calib_vars])
 
-plt.savefig(paths.figures / "tmp.png")
+    # Extract the axes
+    axes = np.array(fig.axes).reshape((ndim, ndim))
+
+
+    # Loop over the histograms
+    for yi in range(ndim):
+        for xi in range(yi):
+            ax = axes[yi, xi]
+            ax.scatter(select_emod_results[calib_vars[xi]], select_emod_results[calib_vars[yi]], 
+                s = 3, c=cnrm(select_emod_results['cal_val']))
+
+    plt.savefig(paths.figures / "calib_{}.png".format(ii), transparent=1)
