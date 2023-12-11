@@ -13,3 +13,5 @@ dependencies:
       - emodpy==1.22
       - matplotlib
       - sciris
+      - pyDOE2
+      - pyfcf
