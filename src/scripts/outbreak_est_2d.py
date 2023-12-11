@@ -123,7 +123,8 @@ for iy in range(len(R0_ranges)):
     s = (R0_range[1]-R0_range[0])/3
     # plot
     plot_R0_dist(m,s,ax)
-    ax.text(ax.get_xlim()[0], ax.get_ylim()[0], name, ha="left", va="bottom", fontsize=10)
+    ax.text(ax.get_xlim()[0], ax.get_ylim()[0], 'disease {}'.format(iy), ha="left", va="bottom", fontsize=10)
+    # ax.text(ax.get_xlim()[0], ax.get_ylim()[0], name, ha="left", va="bottom", fontsize=10)
     # add to plot
     if iy == 0:
         ax.set_xlabel("Reproductive Number")

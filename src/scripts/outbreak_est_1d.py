@@ -121,7 +121,8 @@ for iy in range(len(R0_ranges)):
     s = (R0_range[1]-R0_range[0])/3
     # plot
     plot_R0_dist(m,s,ax)
-    ax.text(ax.get_xlim()[0], ax.get_ylim()[0], name, ha="left", va="bottom", fontsize=10)
+    ax.text(ax.get_xlim()[0], ax.get_ylim()[0], 'disease {}'.format(iy), ha="left", va="bottom", fontsize=10)
+    # ax.text(ax.get_xlim()[0], ax.get_ylim()[0], name, ha="left", va="bottom", fontsize=10)
     # add to plot
     if iy == 0:
         ax.set_xlabel("Reproductive Number")
@@ -142,13 +143,13 @@ for iy in range(len(R0_ranges)):
     # get EMOD results
     select_emod_results = emod_results[emod_results["R0_name"] == name]
 
-    # # plot without pymc
-    # plot_Z_dist(m,s,ax,select_emod_results)    
+    # plot without pymc
+    plot_Z_dist(m,s,ax,select_emod_results)    
 
-    # add pymc: load json file
-    pymc_results = json.load(open(paths.output / f"idata_{name}.json"))    
-    # plot
-    plot_Z_dist(m,s,ax,select_emod_results,pymc_results)
+    # # add pymc: load json file
+    # pymc_results = json.load(open(paths.output / f"idata_{name}.json"))    
+    # # plot
+    # plot_Z_dist(m,s,ax,select_emod_results,pymc_results)
 
 
 
