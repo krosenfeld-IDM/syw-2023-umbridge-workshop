@@ -9,6 +9,8 @@ class DefaultColors(BaseModel):
     analytic: list = 3*[0.7]
     R0: str = "k"
     emod: str = "C0"
+    sensitivity: list = ['C1', 'C2', 'C3', 'C4']
+
 
 class CalibBrick(BaseModel):
     param_calib: dict

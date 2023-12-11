@@ -29,7 +29,7 @@ db_df = db.to_df()
 
 # param_levels
 param_keys = ['R0_variance', 'indiv_variance_acq', 'correlation_acq_trans']
-param_levels = db_df[param_keys].drop_duplicates()
+param_levels = db_df[param_keys].drop_duplicates().iloc[::-1].reset_index(drop=True)
 
 #####################################################
 # Figure 1: Plot Z as a funtion of R0
@@ -65,7 +65,7 @@ ax.set_ylabel('Population Infected')
 ax.set_ylim(-0.01, 0.81)
 
 
-plt.savefig(paths.figures / "outbreak_sensitivyt_Z.png", transparent=0)
+plt.savefig(paths.figures / "outbreak_sensitivyt_Z.png", transparent=1)
 
 #####################################################
 # Figure 2: Plot the samples
@@ -123,4 +123,4 @@ for ii, (col, (_, params)) in enumerate(zip(cols, param_levels.iterrows())):
         ax.set_xlabel('Catching multiplier')
     
 
-plt.savefig(paths.figures / "outbreak_sensitivy_grid.png", transparent=0)
+plt.savefig(paths.figures / "outbreak_sensitivy_grid.png", transparent=1)
