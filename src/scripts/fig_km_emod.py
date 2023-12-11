@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.optimize as spopt
+from sklearn.linear_model import LogisticRegression
 
 import pyfcf
 
@@ -61,14 +62,31 @@ def fig2_build():
   ax.set_yticklabels(["{:0.0f}%".format(100*s) for s in ax.get_yticks()])
   ax.set_ylim(-0.01, 0.81)
   ax.set_ylabel('Population Infected')
+  ax.set_xlabel('Reproductive Number')
   return ax
 
+# figure 1: add example trace
 ax = fig2_build()
 ax.plot(example_trace["R0"], example_trace["atk_frac"], 'o', color=methods.DefaultColors().emod)  
 plt.savefig(paths.figures / 'EMOD_reproduces_KMlimit_1.png', transparent=1)
 
+# figure 2: add all results
 ax = fig2_build()
 ax.plot(select_res["R0"].values, select_res["atk_frac"].values, 'o', color=methods.DefaultColors().emod, alpha=0.6)
 plt.savefig(paths.figures / 'EMOD_reproduces_KMlimit_2.png', transparent=1)
 
-
+# # figure 3: add logistic regression
+# ax = fig2_build()
+# ax.plot(select_res["R0"].values, select_res["atk_frac"].values, 'o', color=methods.DefaultColors().emod, alpha=0.6)  
+# # logistic regression
+# R0 = np.array(select_res['R0'])[:,None]        
+# outbreak = np.array(1*(select_res['atk_frac'] > 0.05)).ravel()
+# # Create a logistic regression model
+# model = LogisticRegression()
+# # Train the model
+# model.fit(R0, outbreak.ravel())
+# x = np.linspace(*ax.get_xlim())[:, None]
+# y_pred = model.predict_proba(x)
+# ax.plot(x, 0.8*ax.get_ylim()[1]*y_pred[:,1], '--', color=methods.DefaultColors().emod)
+# ax.hlines(0.8*ax.get_ylim()[1], *ax.get_xlim(), color=methods.DefaultColors().emod, ls='-')
+# plt.savefig(paths.figures / 'EMOD_reproduces_KMlimit_3.png', transparent=1)
