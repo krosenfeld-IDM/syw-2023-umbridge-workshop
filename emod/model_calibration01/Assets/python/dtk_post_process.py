@@ -35,9 +35,12 @@ def application(output_path):
   parsed_dat[key_str]['atk_frac']  = int(tot_inf)/tot_pop
   parsed_dat[key_str]['herd_frac'] = int(epi_inf)/tot_pop
 
-  # assessment metric for calibration (bigger is better --> 0
+  # assessment metric for calibration (bigger is better --> 0)
   # https://github.com/InstituteforDiseaseModeling/EMOD-Generic-Scripts/blob/main/model_demographics01/Assets/python/dtk_post_process.py
-  parsed_dat[key_str]['cal_val'] = float(-np.abs(int(tot_inf)/tot_pop - 0.4))
+  parsed_dat[key_str]['cal_val'] = float(-np.abs(int(tot_inf)/tot_pop - 0.4) / (2*0.05**2))
+
+  if gdata.var_params.get('calibrate_peak', False):
+    parsed_dat[key_str]['cal_val'] += float(-np.abs(np.argmax(np.cumsum(new_inf)) - 175) / (2*10**2))
 
   if gdata.var_params.get('return_timeseries', False):
     # Monthly timeseries
